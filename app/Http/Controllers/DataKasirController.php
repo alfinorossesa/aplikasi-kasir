@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use App\Models\DataKasir;
+use App\Http\Requests\DataKasirRequest;
 
 class DataKasirController extends Controller
 {
@@ -28,7 +26,9 @@ class DataKasirController extends Controller
      */
     public function create()
     {
-        return view('data-kasir.create');
+        return view('data-kasir.create',[
+            'dataKasir' => new User,
+        ]);
     }
 
     /**
@@ -37,20 +37,9 @@ class DataKasirController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(DataKasirRequest $request)
     {
-        $validatedData = $request->validate([
-            'nama' => 'required|max:255',
-            'username' => 'required|max:25|unique:data_kasir',
-            'no_telepon' => 'required|min:11|max:13',
-            'role' => 'required',
-            'password' => 'required|min:8|max:12'
-        ]);
-
-        $validatedData['password'] = Hash::make($validatedData['password']);
-
-        DataKasir::create($validatedData);
-        User::create($validatedData);
+        User::create($request->validated());
 
         return redirect()->route('data-kasir.index');
     }
@@ -86,20 +75,9 @@ class DataKasirController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(DataKasirRequest $request, $id)
     {
-        $validatedData = $request->validate([
-            'nama' => 'required|max:255',
-            'username' => 'required|max:25',
-            'no_telepon' => 'required|min:11|max:13',
-            'role' => 'required',
-            'password' => 'required|min:8|max:12'
-        ]);
-
-        $validatedData['password'] = Hash::make($validatedData['password']);
-
-        $dataKasir = User::find($id);
-        $dataKasir->update($validatedData);
+        User::find($id)->update($request->validated());
 
         return redirect()->route('data-kasir.index');
     }
@@ -112,8 +90,7 @@ class DataKasirController extends Controller
      */
     public function destroy($id)
     {
-        $dataKasir = User::find($id);
-        $dataKasir->delete();
+        User::find($id)->delete();
 
         return redirect()->route('data-kasir.index');
     }

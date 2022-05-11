@@ -2,13 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\DataMenu;
 use App\Models\DataKategoriMenu;
-use File;
+use App\Http\Requests\DataMenuRequest;
+use App\Services\DataMenuService;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class DataMenuController extends Controller
 {
+    protected $dataMenu;
+    public function __construct(DataMenuService $dataMenu)
+    {
+        $this->dataMenu = $dataMenu;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -39,26 +47,13 @@ class DataMenuController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(DataMenuRequest $request)
     {
-        $this->validate($request, [
-            'nama_menu' => 'required|max:255',
-            'harga' => 'required|numeric|min:1',
-            'kategori' => 'required',
-            'photo' => 'required|image|mimes:jpg,png|file|max:1024'
-        ]);
-
-        $photo = $request->file('photo');
-        $photo_name = time()."_".$photo->getClientOriginalName();
-        $photo->move('img/menu',$photo_name);
-
-        DataMenu::create([
-            'nama_menu' => $request->nama_menu,
-            'harga' => $request->harga,
-            'kategori' => $request->kategori,
-            'photo' => $photo_name,
-            'id_dataKategoriMenu' => $request->id_dataKategoriMenu
-        ]);
+        try {
+            $this->dataMenu->dataMenuStore($request);
+        } catch (\Throwable $th) {
+            Log::info($th);
+        }
 
         return redirect()->route('data-menu.index');
     }
@@ -95,33 +90,14 @@ class DataMenuController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(DataMenuRequest $request, $id)
     {
-        $this->validate($request, [
-            'nama_menu' => 'required|max:255',
-            'harga' => 'required|numeric|min:1',
-            'kategori' => 'required',
-            'photo' => 'image|mimes:jpg,png|file|max:1024'
-        ]);
-
-        $dataMenu = DataMenu::find($id);
-        $dataMenu->update([
-            'nama_menu' => $request->nama_menu,
-            'harga' => $request->harga,
-            'kategori' => $request->kategori,
-            'id_dataKategoriMenu' => $request->id_dataKategoriMenu
-        ]);
-
-        // // update foto            
-        if($request->hasFile('photo')){
-            File::delete('img/menu/'.$dataMenu->photo);
-            $photo = $request->file('photo');
-            $photo_name = time()."_".$photo->getClientOriginalName();
-            $photo->move('img/menu',$photo_name);
-            $dataMenu->photo = $photo_name;
-            $dataMenu->update();            
+        try {
+            $this->dataMenu->dataMenuUpdate($request, $id);
+        } catch (\Throwable $th) {
+            Log::info($th);
         }
-
+        
         return redirect()->route('data-menu.index');
     }
 
@@ -134,7 +110,7 @@ class DataMenuController extends Controller
     public function destroy($id)
     {
         $dataMenu = DataMenu::find($id);
-        File::delete('img/menu/'.$dataMenu->photo);
+        Storage::delete('public/images/'.$dataMenu->photo);
         $dataMenu->delete();
 
         return redirect()->route('data-menu.index');
@@ -143,6 +119,6 @@ class DataMenuController extends Controller
     public function jsonDataKategoriMenu($id)
     {
         $dataKategoriMenu = DataKategoriMenu::find($id);
-        return response()->json($dataKategoriMenu, 200);
+        return $dataKategoriMenu;
     }
 }

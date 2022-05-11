@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use App\Models\DataAdmin;
+use App\Http\Requests\DataAdminRequest;
 
 class DataAdminController extends Controller
 {
@@ -28,7 +26,9 @@ class DataAdminController extends Controller
      */
     public function create()
     {
-        return view('data-admin.create');
+        return view('data-admin.create',[
+            'dataAdmin' => new User,
+        ]);
     }
 
     /**
@@ -37,20 +37,9 @@ class DataAdminController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(DataAdminRequest $request)
     {
-        $validatedData = $request->validate([
-            'nama' => 'required|max:255',
-            'username' => 'required|max:25|unique:data_admin',
-            'no_telepon' => 'required|min:11|max:13',
-            'role' => 'required',
-            'password' => 'required|min:8|max:12'
-        ]);
-
-        $validatedData['password'] = Hash::make($validatedData['password']);
-
-        DataAdmin::create($validatedData);
-        User::create($validatedData);
+        User::create($request->validated());
 
         return redirect()->route('data-admin.index');
     }
@@ -86,20 +75,9 @@ class DataAdminController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(DataAdminRequest $request, $id)
     {
-        $validatedData = $request->validate([
-            'nama' => 'required|max:255',
-            'username' => 'required|max:25',
-            'no_telepon' => 'required|min:11|max:13',
-            'role' => 'required',
-            'password' => 'required|min:8|max:12'
-        ]);
-
-        $validatedData['password'] = Hash::make($validatedData['password']);
-
-        $dataAdmin = User::find($id);
-        $dataAdmin->update($validatedData);
+        User::find($id)->update($request->validated());
 
         return redirect()->route('data-admin.index');
     }
@@ -112,8 +90,7 @@ class DataAdminController extends Controller
      */
     public function destroy($id)
     {
-        $dataAdmin = User::find($id);
-        $dataAdmin->delete();
+        User::find($id)->delete();
 
         return redirect()->route('data-admin.index');
     }

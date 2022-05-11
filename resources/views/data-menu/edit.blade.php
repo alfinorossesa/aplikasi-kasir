@@ -53,7 +53,7 @@
                     <input type="hidden" name="oldImage" value="{{ $dataMenu->photo }}">
                     <input type="file" class="form-control @error('photo') is-invalid @enderror" id="photo" name="photo" onchange="previewImage()">
                     @if ($dataMenu->photo)
-                            <img src="{{ asset('img/menu/' . $dataMenu->photo) }}" class="img-preview img-fluid mt-3 col-sm-2 d-block">
+                            <img src="{{ asset('storage/images/' . $dataMenu->photo) }}" class="img-preview img-fluid mt-3 col-sm-2 d-block">
                         @else               
                             <img class="img-preview img-fluid mt-3 col-sm-2">
                         @endif

@@ -78,23 +78,17 @@
     @endforeach
 </div>
 
-<div class="row">
-    <div class="col-md-8"></div>
-    <div class="col-md-4">
-        <div class="app-card-body">
-            <form class="settings-form">
-                <div class="mb-3">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <label for="total" class="form-label label-pembayaran">Harga Total</label>
-                        </div>
-                        <div class="col-md-8">
-                            {{-- <input type="number" class="form-control" id="total" name="total" value="{{ $jumlah }}" required placeholder="harga Total"> --}}
-                            <span class="totalPendapatan">Rp. {{ number_format($jumlah) }}</span>
-                        </div>
-                    </div>
+<div class="row g-3 mb-5 mt-2 align-items-center justify-content-end print">
+    <div class="col-auto">
+         <div class="page-utilities">
+            <div class="row g-2 justify-content-start justify-content-md-end align-items-center">
+                <div class="col-auto">						    
+                    <label class="form-label label-pembayaran">Harga Total</label>
                 </div>
-            </form>
+                <div class="col-auto">						    
+                    <h5 class="totalPendapatan">Rp. {{ number_format($jumlah) }}</h5>
+                </div>
+            </div>
         </div>
     </div>
 </div>

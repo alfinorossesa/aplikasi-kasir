@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\DataKategoriMenu;
+use App\Http\Requests\DataKategoriMenuRequest;
 
 class DataKategoriMenuController extends Controller
 {
@@ -26,7 +26,9 @@ class DataKategoriMenuController extends Controller
      */
     public function create()
     {
-        return view('data-kategori-menu.create');
+        return view('data-kategori-menu.create',[
+            'dataKategoriMenu' => new DataKategoriMenu,
+        ]);
     }
 
     /**
@@ -35,13 +37,9 @@ class DataKategoriMenuController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(DataKategoriMenuRequest $request)
     {
-        $this->validate($request, [
-            'nama_kategori' => 'required|max:255'
-        ]);
-
-        DataKategoriMenu::create($request->all());
+        DataKategoriMenu::create($request->validated());
 
         return redirect()->route('data-kategori-menu.index');
     }
@@ -77,14 +75,9 @@ class DataKategoriMenuController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(DataKategoriMenuRequest $request, $id)
     {
-        $this->validate($request, [
-            'nama_kategori' => 'required|max:255'
-        ]);
-
-        $dataKategoriMenu = DataKategoriMenu::find($id);
-        $dataKategoriMenu->update($request->all());
+        DataKategoriMenu::find($id)->update($request->validated());
 
         return redirect()->route('data-kategori-menu.index');
     }
@@ -97,8 +90,7 @@ class DataKategoriMenuController extends Controller
      */
     public function destroy($id)
     {
-        $dataKategoriMenu = DataKategoriMenu::find($id);
-        $dataKategoriMenu->delete();
+        DataKategoriMenu::find($id)->delete();
 
         return redirect()->route('data-kategori-menu.index');
     }

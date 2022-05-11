@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\StokBahan;
+use App\Http\Requests\StokBahanRequest;
 
 class StokBahanController extends Controller
 {
@@ -26,7 +26,9 @@ class StokBahanController extends Controller
      */
     public function create()
     {
-        return view('stok-bahan.create');
+        return view('stok-bahan.create',[
+            'stokBahan' => new StokBahan,
+        ]);
     }
 
     /**
@@ -35,15 +37,9 @@ class StokBahanController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StokBahanRequest $request)
     {
-        $this->validate($request, [
-            'nama' => 'required',
-            'stok' => 'required',
-            'harga' => 'required'
-        ]);
-
-        StokBahan::create($request->all());
+        StokBahan::create($request->validated());
 
         return redirect()->route('stok-bahan.index');
     }
@@ -78,16 +74,9 @@ class StokBahanController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(StokBahanRequest $request, $id)
     {
-        $this->validate($request, [
-            'nama' => 'required',
-            'stok' => 'required',
-            'harga' => 'required'
-        ]);
-
-        $stokBahan = StokBahan::find($id);
-        $stokBahan->update($request->all());
+        StokBahan::find($id)->update($request->validated());
 
         return redirect()->route('stok-bahan.index');
     }
@@ -100,8 +89,7 @@ class StokBahanController extends Controller
      */
     public function destroy($id)
     {
-        $stokBahan = StokBahan::find($id);
-        $stokBahan->delete();
+        StokBahan::find($id)->delete();
 
         return redirect()->route('stok-bahan.index');
     }

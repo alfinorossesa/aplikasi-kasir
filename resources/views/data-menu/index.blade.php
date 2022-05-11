@@ -44,7 +44,7 @@
                                     <td class="cell">{{ $menu->nama_menu }}</td>
                                     <td class="cell">{{ $menu->dataKategoriMenu->nama_kategori }}</td>
                                     <td class="cell">Rp. {{ number_format($menu->harga) }}</td>
-                                    <td class="cell"><img src="{{ asset('img/menu/'.$menu->photo) }}" alt="photo" style="width: 60px; height: 60px;"></td>
+                                    <td class="cell"><img src="{{ asset('storage/images/'.$menu->photo) }}" alt="photo" style="width: 60px; height: 60px;"></td>
                                     <td class="cell">
                                         <a href="{{ route('data-menu.edit', $menu->id) }}" class="btn btn-edit btn-sm">Edit</a>
                                         <form action="{{ route('data-menu.destroy', $menu->id) }}" method="POST" style="display: inline;"> 

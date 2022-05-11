@@ -28,9 +28,9 @@
                     @csrf
                         <div class="col-auto">
                             <label for="dari_tanggal" class="filter-tanggal">Dari Tanggal</label>
-                            <input type="date" class="form-control search-orders mb-2" id="dari_tanggal" name="dari_tanggal" required value="{{ $dari_tanggal }}">
+                            <input type="date" class="form-control search-orders mb-2" id="dari_tanggal" name="dari_tanggal" required value="{{ request('dari_tanggal') }}">
                             <label for="sampai_tanggal" class="filter-tanggal">Sampai Tanggal</label>
-                            <input type="date" class="form-control search-orders mb-4" id="sampai_tanggal" name="sampai_tanggal" required value="{{ $sampai_tanggal }}">
+                            <input type="date" class="form-control search-orders mb-4" id="sampai_tanggal" name="sampai_tanggal" required value="{{ request('sampai_tanggal') }}">
                         </div>
                         <div>
                             <button type="submit" name="submit" value="submit" class="btn app-btn-primary print">Atur Tanggal</button>
@@ -44,7 +44,7 @@
     <div class="col-md-4 col-sm-5 search-pemesanan">
         <form action="{{ route('pemesanan.index') }}" method="GET">
             <div class="input-group mb-3">
-                <input type="text" name="cari" class="form-control" placeholder="Cari Nama Kasir . . . . " value="{{ $cari }}">
+                <input type="text" name="cari" class="form-control" placeholder="Cari Nama Kasir . . . . " value="{{ request('cari') }}">
                 <button type="submit" class="btn app-btn-primary">Cari</button> 
             </div>
         </form>
@@ -74,7 +74,7 @@
                         ?>
 
                         <tbody>
-                            @if ($request->submit == 'submit')
+                            @if (request()->has('submit'))
                                 @foreach ($filterPemesanan as $p)
                                     <tr>
                                         <td class="cell">{{ $no++ }}.</td>
@@ -118,7 +118,7 @@
                 </div>
             </div>		
         </div>
-        @if ($request->submit == 'submit')
+        @if (request()->has('submit'))
             {{ $filterPemesanan->links() }}
         @else 
             {{ $pemesanan->links() }}
@@ -126,7 +126,7 @@
     </div>
 </div>
 
-@if ($request->submit == 'submit')
+@if (request()->has('submit'))
     @foreach ($filterPemesanan as $nota)
     <!-- Modal -->
         <div class="modal fade modal-nota" id="staticBackdrop-{{ $nota->id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">

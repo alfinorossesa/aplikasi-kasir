@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StorePostRequest extends FormRequest
+class DataMenuRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,8 +24,10 @@ class StorePostRequest extends FormRequest
     public function rules()
     {
         return [
-            'id_dataKategoriMenu' => 'required',
-            'tanggal' => 'required'
+            'nama_menu' => 'required|max:255',
+            'harga' => 'required|numeric|min:1',
+            'kategori' => 'required',
+            'photo' => 'required|image|mimes:jpg,png|file|max:1024',
         ];
     }
 }

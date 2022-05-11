@@ -7,41 +7,34 @@ use App\Models\DataKategoriMenu;
 use App\Models\DataMenu;
 use App\Models\Pemesanan;
 use App\Models\DetailPemesanan;
-use App\Models\TransaksiPemesanan;
-use App\Models\User;
-use Auth;
 use PDF;
 use App\Http\Requests\StorePostRequest;
+use App\Http\Requests\TransaksiPemesananRequest;
+use App\Services\PemesananService;
 
 class PemesananController extends Controller
 {
+    protected $pemesanan;
+    public function __construct(PemesananService $pemesanan)
+    {
+        $this->pemesanan = $pemesanan;
+    }
+
     public function index(Request $request)
     {
-        $dari_tanggal = $request->dari_tanggal;
-        $sampai_tanggal = $request->sampai_tanggal;
-
-        $cari = $request->cari;
-
-        if ($request->submit == 'submit') 
-        {
-            $filterPemesanan = Pemesanan::has('detailPemesanan')->has('transaksiPemesanan')->whereBetween('tanggal', [$dari_tanggal, $sampai_tanggal])->latest()->paginate(10);
+        if (request()->has('submit')) {
+            $filterPemesanan = $this->pemesanan->filterPemesanan();
             $detailPemesanan = DetailPemesanan::all();
+            
+            return view('pemesanan.index', compact('filterPemesanan', 'detailPemesanan'));
+        } 
 
-            return view('pemesanan.index', compact('filterPemesanan', 'detailPemesanan', 'request', 'dari_tanggal', 'sampai_tanggal', 'cari'));
+        $pemesanan = $this->pemesanan->pemesanan();
+        $detailPemesanan = DetailPemesanan::all();
+        $pemesanan->appends($request->all());
 
-        } else {
-
-            $pemesanan = Pemesanan::has('detailPemesanan')->has('transaksiPemesanan')
-            ->whereHas('user', function ($query) use ($cari){
-                $query->has('pemesanan')->where('nama', 'like', '%' . $cari . '%');
-            })->latest()->paginate(10);
-
-            $detailPemesanan = DetailPemesanan::all();
-
-            $pemesanan->appends($request->all());
-            return view('pemesanan.index', compact('pemesanan', 'detailPemesanan', 'request', 'dari_tanggal', 'sampai_tanggal', 'cari'));
-        }
-
+        return view('pemesanan.index', compact('pemesanan', 'detailPemesanan'));
+        
     }
 
     public function create()
@@ -60,29 +53,7 @@ class PemesananController extends Controller
 
     public function store(StorePostRequest $request)
     {
-        \DB::transaction(function () use ($request){
-            $orderMenus = $this->getMenuDetails($request->jumlah);
-            $hargaTotal = $this->calculateTotalAmount($request->jumlah);
-            
-            $idUser = Auth::user()->id;
-
-            $this->validate($request, [
-                'tanggal' => 'required'
-            ]);
-
-            if (count($orderMenus) > 0) {
-                $order = Pemesanan::create([
-                    'harga_total' => $hargaTotal,
-                    'tanggal' => $request->tanggal,
-                    'id_user' => $idUser
-                ]);
-
-                if ($order) {
-                    $order->detailPemesanan()->createMany($orderMenus);
-                }
-            } 
-
-        });
+        $this->pemesanan->pemesananStore($request);
 
         return redirect()->route('pemesanan.transaksiPemesanan');
     }
@@ -95,20 +66,9 @@ class PemesananController extends Controller
         return view('pemesanan.transaksi-pemesanan', compact('pemesanan', 'detailPemesanan'));
     }
 
-    public function transaksiPemesananStore(Request $request)
+    public function transaksiPemesananStore(TransaksiPemesananRequest $request)
     {
-        $this->validate($request, [
-            'total' => 'required',
-            'dibayar' => 'required',
-            'sisa' => 'required'
-        ]);
-
-        TransaksiPemesanan::create([
-            'total' => $request->total,
-            'dibayar' => $request->dibayar,
-            'sisa' => $request->sisa,
-            'id_pemesanan' => $request->id_pemesanan
-        ]);
+        $this->pemesanan->transaksiPemesananStore($request);
 
         return redirect()->route('pemesanan.index');
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,14 +13,9 @@ class LoginController extends Controller
         return view('login.index');
     }
 
-    public function authenticate(Request $request)
+    public function authenticate(LoginRequest $request)
     {
-        $credentials = $request->validate([
-            'username' => 'required',
-            'password' => 'required'
-        ]);
-
-        if(Auth::attempt($credentials)) {
+        if(Auth::attempt($request->validated())) {
             $request->session()->regenerate();
 
             return redirect()->intended('/');

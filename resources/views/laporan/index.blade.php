@@ -14,9 +14,9 @@
             @csrf
                 <div class="col-auto">
                     <label for="dari_tanggal" class="filter-tanggal">Dari Tanggal</label>
-                    <input type="date" class="form-control search-orders mb-2" id="dari_tanggal" name="dari_tanggal" required value="{{ $dari_tanggal }}">
+                    <input type="date" class="form-control search-orders mb-2" id="dari_tanggal" name="dari_tanggal" required value="{{ request('dari_tanggal') }}">
                     <label for="sampai_tanggal" class="filter-tanggal">Sampai Tanggal</label>
-                    <input type="date" class="form-control search-orders mb-4" id="sampai_tanggal" name="sampai_tanggal" required value="{{ $sampai_tanggal }}">
+                    <input type="date" class="form-control search-orders mb-4" id="sampai_tanggal" name="sampai_tanggal" required value="{{ request('sampai_tanggal') }}">
                 </div>
                 <div>
                     <button type="submit" name="submit" value="submit" class="btn app-btn-primary print">Atur Tanggal</button>
@@ -43,7 +43,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @if ($request->submit == 'submit')
+                            @if (request()->has('submit'))
                                 @foreach ($filterPemesanan as $p)
                                     <tr>
                                         <td class="cell">{{ $loop->iteration }}.</td>
@@ -78,7 +78,7 @@
 ?>
 
 <div style="display: none;">
-    @if ($request->submit == 'submit')
+    @if (request()->has('submit'))
         @foreach ($filterPemesanan as $p)
             <p>{{ $p->transaksiPemesanan[0]->total }}</p>
             <p><?php $jumlah += $p->transaksiPemesanan[0]->total ?></p>
@@ -91,23 +91,17 @@
     @endif
 </div>
 
-<div class="row">
-    <div class="col-md-7 col-sm-7"></div>
-    <div class="col-md-5 col-sm-5">
-        <div class="app-card-body">
-            <form class="settings-form">
-                <div class="mb-3">
-                    <div class="row justify-content-end">
-                        <div class="col-3 col-lg-5 col-md-5">
-                            <label for="total" class="form-label label-pembayaran">Total Pendapatan</label>
-                        </div>
-                        <div class="col-3 col-lg-7 col-md-7">
-                            {{-- <input type="number" class="form-control" id="total" name="total" value="{{ $jumlah }}" required placeholder="harga Total"> --}}
-                            <h5 class="totalPendapatan">Rp. {{ number_format($jumlah) }}</h5>
-                        </div>
-                    </div>
+<div class="row g-3 mb-5 align-items-center justify-content-end">
+    <div class="col-auto">
+         <div class="page-utilities">
+            <div class="row g-2 justify-content-start justify-content-md-end align-items-center">
+                <div class="col-auto">						    
+                    <label class="form-label label-pembayaran">Total Pendapatan</label>
                 </div>
-            </form>
+                <div class="col-auto">						    
+                    <h5 class="totalPendapatan">Rp. {{ number_format($jumlah) }}</h5>
+                </div>
+            </div>
         </div>
     </div>
 </div>

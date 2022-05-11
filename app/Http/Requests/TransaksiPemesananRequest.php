@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StorePostRequest extends FormRequest
+class TransaksiPemesananRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,8 +24,9 @@ class StorePostRequest extends FormRequest
     public function rules()
     {
         return [
-            'id_dataKategoriMenu' => 'required',
-            'tanggal' => 'required'
+            'total' => 'required',
+            'dibayar' => 'required',
+            'sisa' => 'required'
         ];
     }
 }

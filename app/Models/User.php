@@ -49,4 +49,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Pemesanan::class, 'id_user');
     }
+
+    public function setPasswordAttribute($password)
+    {
+        $this->attributes['password'] = bcrypt($password);
+    }
 }
